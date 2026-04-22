@@ -104,13 +104,11 @@ class SendGridRequestParser(RequestParser):
             text = _decode_POST_value(request, 'text', default='')
             html = _decode_POST_value(request, 'html', default='')
 
-        except IndexError as ex:
-            raise RequestParseError(
-                "Inbound request lacks a valid from address: %s." % request.get('from')
-            )
+        except IndexError as exc:
+            raise RequestParseError("Could not get a valid from address out of: %s." % request) from exc
 
-        except MultiValueDictKeyError as ex:
-            raise RequestParseError("Inbound request is missing required value: %s." % ex)
+        except MultiValueDictKeyError as exc:
+            raise RequestParseError("Inbound request is missing required value: %s." % exc) from exc
 
         if "@" not in from_email:
             # Light sanity check for potential issues related to taking just the
